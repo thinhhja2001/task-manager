@@ -1,4 +1,4 @@
-package com.example.taskmanagement.payloads;
+package com.example.taskmanagement.payloads.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
