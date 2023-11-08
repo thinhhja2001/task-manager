@@ -1,6 +1,6 @@
 package com.example.taskmanagement.controllers;
 
-import com.example.taskmanagement.payloads.Response;
+import com.example.taskmanagement.payloads.responses.Response;
 import com.example.taskmanagement.models.Task;
 import com.example.taskmanagement.payloads.requests.TaskManagingRequest;
 import com.example.taskmanagement.services.TaskService;
