@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateTaskRequest {
+public class TaskManagingRequest {
     String title;
     String description;
     Boolean completed;
