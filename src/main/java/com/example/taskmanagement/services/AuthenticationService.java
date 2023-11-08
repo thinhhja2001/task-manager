@@ -49,33 +49,48 @@ public class AuthenticationService {
                     .status(HttpStatus.incorrectCredential.statusCode)
                     .msg(HttpStatus.incorrectCredential.message)
                     .build();
+        } catch (Exception e) {
+            System.out.println(e);
+            return Response.<AuthenticationBody>builder()
+                    .status(HttpStatus.internalServerError.statusCode)
+                    .msg(HttpStatus.internalServerError.message)
+                    .build();
         }
 
     }
 
     public Response<AuthenticationBody> register(AuthenticationRequest request) {
-        var user = userRepository.findByUsername(request.getUsername());
-        if (user != null) {
+        try {
+            var user = userRepository.findByUsername(request.getUsername());
+            if (user != null) {
+                return Response.<AuthenticationBody>builder()
+                        .status(HttpStatus.userExisted.statusCode)
+                        .msg(HttpStatus.userExisted.message)
+                        .build();
+            }
+            user = User.builder()
+                    .username(request.getUsername())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .build();
+            var userSaved = userRepository.save(user);
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()));
+            var jwtToken = jwtTokenProvider.generateToken(userSaved);
             return Response.<AuthenticationBody>builder()
-                    .status(HttpStatus.userExisted.statusCode)
-                    .msg(HttpStatus.userExisted.message)
+                    .status(HttpStatus.success.statusCode)
+                    .msg(HttpStatus.success.message)
+                    .data(AuthenticationBody.builder()
+                            .token(jwtToken)
+                            .build()).build();
+        } catch (Exception e) {
+            System.out.println(e);
+            return Response.<AuthenticationBody>builder()
+                    .status(HttpStatus.internalServerError.statusCode)
+                    .msg(HttpStatus.internalServerError.message)
                     .build();
         }
-        user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
-        var userSaved = userRepository.save(user);
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()));
-        var jwtToken = jwtTokenProvider.generateToken(userSaved);
-        return Response.<AuthenticationBody>builder()
-                .status(HttpStatus.success.statusCode)
-                .msg(HttpStatus.success.message)
-                .data(AuthenticationBody.builder()
-                        .token(jwtToken)
-                        .build()).build();
+
     }
 }
